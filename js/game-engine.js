@@ -50,9 +50,10 @@ class GameEngine {
         // Deal one card to start the play area
         const startCard = this.deck.draw(1)[0];
         if (startCard) {
+            this.initialCard = startCard;  // Store initial card separately
             this.lastPlay = {
                 playerId: 'dealer',
-                playerName: 'Dealer',
+                playerName: 'Initial Card',
                 cards: [startCard],
                 type: 'single'
             };

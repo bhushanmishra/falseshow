@@ -294,6 +294,24 @@ class GameController {
 
         if (!playedCards) return;
 
+        let displayHTML = '<div class="play-zone" style="display: flex; gap: 2rem; justify-content: center; align-items: center; flex-wrap: wrap;">';
+
+        // Show initial card if available
+        if (this.gameEngine && this.gameEngine.initialCard && this.gameEngine.initialCard.toHTML) {
+            displayHTML += `
+                <div style="text-align: center;">
+                    <div style="color: #666; font-size: 0.8rem; margin-bottom: 0.5rem;">INITIAL CARD</div>
+                    <div style="opacity: 0.7;">${this.gameEngine.initialCard.toHTML()}</div>
+                </div>`;
+        }
+
+        // Show arrow between cards if there's both initial and last play
+        if (this.gameEngine && this.gameEngine.initialCard && this.gameEngine.lastPlay &&
+            this.gameEngine.lastPlay.playerId !== 'dealer') {
+            displayHTML += '<div style="font-size: 2rem; color: #888;">→</div>';
+        }
+
+        // Show last played cards
         if (this.gameEngine && this.gameEngine.lastPlay && this.gameEngine.lastPlay.cards && this.gameEngine.lastPlay.cards.length > 0) {
             try {
                 const cardsHTML = this.gameEngine.lastPlay.cards
@@ -301,46 +319,62 @@ class GameController {
                     .map(card => card.toHTML())
                     .join('');
 
-                // Show who played these cards
                 const playerName = this.gameEngine.lastPlay.playerName || 'Unknown';
                 const playType = this.gameEngine.lastPlay.type || 'play';
                 const isSafe = this.gameEngine.lastPlay.isSafe;
 
-                playedCards.innerHTML = `
-                    <div class="play-zone">
-                        <div class="last-play-info" style="text-align: center; margin-bottom: 0.5rem; color: #888; font-size: 0.9rem;">
-                            <strong>${playerName}</strong> played ${playType}
-                            ${isSafe !== undefined ? (isSafe ? '<span style="color: #10b981;">✓ Safe</span>' : '<span style="color: #ef4444;">✗ Unsafe (drew penalty)</span>') : ''}
-                        </div>
-                        <div class="played-cards-display">${cardsHTML}</div>
-                    </div>`;
+                // Only show last play if it's not the initial card
+                if (this.gameEngine.lastPlay.playerId !== 'dealer') {
+                    displayHTML += `
+                        <div style="text-align: center;">
+                            <div style="color: #888; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                                <strong>${playerName}</strong> - ${playType}
+                                ${isSafe !== undefined ? (isSafe ? '<span style="color: #10b981;"> ✓</span>' : '<span style="color: #ef4444;"> ✗ +1</span>') : ''}
+                            </div>
+                            <div>${cardsHTML}</div>
+                        </div>`;
+                }
             } catch (e) {
-                playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">Error displaying cards</p></div>`;
+                // Silent fail
             }
-        } else {
-            playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">Waiting for first play...</p></div>`;
         }
+
+        displayHTML += '</div>';
+        playedCards.innerHTML = displayHTML;
 
         if (deckCount && this.gameEngine && this.gameEngine.deck) {
             deckCount.textContent = this.gameEngine.deck.cardsRemaining();
         }
 
-        // Show joker indicator
+        // Show joker indicator - make it more prominent
         if (this.gameEngine && this.gameEngine.jokerCard && this.gameEngine.jokerCard.toHTML) {
-            const jokerInfo = document.createElement('div');
-            jokerInfo.className = 'joker-indicator';
-            jokerInfo.innerHTML = `<strong>Joker:</strong> ${this.gameEngine.jokerCard.toHTML()}`;
-            jokerInfo.style.cssText = 'position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 100;';
-
+            // Remove existing joker display
             const existingJoker = document.querySelector('.joker-indicator');
             if (existingJoker) {
                 existingJoker.remove();
             }
-            const playArea = document.querySelector('.play-area');
-            if (playArea) {
-                playArea.style.position = 'relative';
-                playArea.appendChild(jokerInfo);
-            }
+
+            // Create new joker display
+            const jokerInfo = document.createElement('div');
+            jokerInfo.className = 'joker-indicator';
+            jokerInfo.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="color: #ff3e3e; font-weight: bold; font-size: 1rem; margin-bottom: 0.5rem;">🃏 JOKER (0 pts)</div>
+                    ${this.gameEngine.jokerCard.toHTML()}
+                </div>`;
+            jokerInfo.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+                padding: 15px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 500;
+                border: 2px solid #ff3e3e;
+            `;
+
+            document.body.appendChild(jokerInfo);
         }
     }
 
