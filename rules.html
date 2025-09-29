@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>False Show - Game Rules</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎴</text></svg>">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .rules-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .back-btn {
+            margin-bottom: 2rem;
+        }
+        .rule-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .rule-section h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .rule-section h3 {
+            color: var(--secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .example-box {
+            background: var(--surface);
+            border-left: 3px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        .card-values-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .card-values-table th,
+        .card-values-table td {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+        }
+        .card-values-table th {
+            background: var(--surface);
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="rules-page">
+        <a href="/" class="btn btn-secondary back-btn">← Back to Game</a>
+
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 2rem;">False Show - Complete Rules</h1>
+
+        <div class="rule-section">
+            <h2>🎯 Objective</h2>
+            <p>Be the last player standing by keeping your score low. Players are eliminated when they reach the agreed-upon score limit (typically 100-150 points).</p>
+        </div>
+
+        <div class="rule-section">
+            <h2>📋 Game Setup</h2>
+            <ol>
+                <li><strong>Players:</strong> 4-6 players</li>
+                <li><strong>Deck:</strong> Standard 52-card deck</li>
+                <li><strong>Score Limit:</strong> Agree on an elimination score (75 for quick, 100 standard, 150 for long games)</li>
+                <li><strong>Deal:</strong>
+                    <ul>
+                        <li>4 players: 8 cards each</li>
+                        <li>5 players: 7 cards each</li>
+                        <li>6 players: 6 cards each</li>
+                    </ul>
+                </li>
+                <li><strong>The Joker:</strong> Dealer reveals bottom 2 cards, picks one as the Joker (worth 0 points)</li>
+            </ol>
+        </div>
+
+        <div class="rule-section">
+            <h2>💎 Card Values</h2>
+            <table class="card-values-table">
+                <tr>
+                    <th>Card</th>
+                    <th>Points</th>
+                </tr>
+                <tr>
+                    <td>Ace</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>2-10</td>
+                    <td>Face Value</td>
+                </tr>
+                <tr>
+                    <td>Jack</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <td>Queen</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>King</td>
+                    <td>13</td>
+                </tr>
+                <tr>
+                    <td>The Joker</td>
+                    <td>0 (Wild)</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="rule-section">
+            <h2>🎮 How to Play</h2>
+
+            <h3>Valid Plays</h3>
+            <ul>
+                <li><strong>Single:</strong> Any one card</li>
+                <li><strong>Pair:</strong> Two cards of the same rank</li>
+                <li><strong>Sequence:</strong> Three or more cards of the same suit in consecutive order</li>
+            </ul>
+
+            <h3>Safe vs Unsafe Plays</h3>
+            <p>After each play, check if it's safe:</p>
+            <ul>
+                <li><strong>✓ SAFE:</strong> At least one card in your play matches the rank of any card in the previous play</li>
+                <li><strong>✗ UNSAFE:</strong> No cards match the previous play's ranks - you must draw a penalty card</li>
+            </ul>
+
+            <div class="example-box">
+                <strong>Example:</strong><br>
+                Player A plays: 8♠ 8♦ (pair of 8s)<br>
+                Player B plays: 6♣ 7♣ 8♣ (sequence)<br>
+                → SAFE! The 8♣ matches the previous 8s<br><br>
+                Player C plays: K♠ (single King)<br>
+                → UNSAFE! No match - draws penalty card
+            </div>
+        </div>
+
+        <div class="rule-section">
+            <h2>🎲 Special Actions</h2>
+
+            <h3>Calling "Show!"</h3>
+            <p>At any time during your turn, you can declare "Show!" if you believe you have the lowest hand value:</p>
+            <ul>
+                <li><strong>If Correct:</strong> You score 0 points, everyone else scores their hand totals</li>
+                <li><strong>If Wrong:</strong> You get a 50-point penalty, the actual lowest hand scores 0</li>
+            </ul>
+
+            <h3>The Joker Rules</h3>
+            <ul>
+                <li>Acts as a wild card in any set</li>
+                <li>Worth 0 points in hand</li>
+                <li>If it's your last card: Must call "Show!" or discard it and draw a new card</li>
+            </ul>
+        </div>
+
+        <div class="rule-section">
+            <h2>📊 Scoring</h2>
+
+            <h3>Round End</h3>
+            <p>A round ends when:</p>
+            <ul>
+                <li>A player empties their hand (scores 0, others score hand totals)</li>
+                <li>Someone calls "Show!" (see above)</li>
+                <li>The deck runs out (all players score hand totals)</li>
+            </ul>
+
+            <h3>Elimination</h3>
+            <p>Players are eliminated when their cumulative score reaches or exceeds the agreed limit.</p>
+
+            <h3>Winning</h3>
+            <p>The last player remaining wins the game!</p>
+        </div>
+
+        <div class="rule-section">
+            <h2>💡 Strategy Tips</h2>
+            <ul>
+                <li><strong>Early Game:</strong> Focus on safe plays to avoid penalties</li>
+                <li><strong>Watch Patterns:</strong> Track what cards have been played</li>
+                <li><strong>Strategic Penalties:</strong> Sometimes drawing is worth dumping high cards</li>
+                <li><strong>Bluff Timing:</strong> Act confident even with unsafe plays</li>
+                <li><strong>Show Gambit:</strong> Calculate risk vs reward carefully</li>
+                <li><strong>Joker Strategy:</strong> Save it for crucial moments</li>
+            </ul>
+        </div>
+
+        <div class="rule-section">
+            <h2>🎯 Quick Variants</h2>
+
+            <h3>Speed Show (15-20 min)</h3>
+            <ul>
+                <li>75-point elimination</li>
+                <li>Start with one fewer card</li>
+            </ul>
+
+            <h3>High Stakes</h3>
+            <ul>
+                <li>Wrong "Show!" = 75-point penalty</li>
+                <li>Makes bluffing riskier</li>
+            </ul>
+
+            <h3>Team Show</h3>
+            <ul>
+                <li>Play in pairs with combined scores</li>
+                <li>No table talk allowed!</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="/" class="btn btn-primary">Start Playing!</a>
+        </div>
+    </div>
+</body>
+</html>

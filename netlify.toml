@@ -1,0 +1,59 @@
+# Netlify configuration for False Show game
+
+[build]
+  publish = "."
+
+# Headers for better performance and security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# PWA support
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Redirects for SPA behavior
+[[redirects]]
+  from = "/play"
+  to = "/play.html"
+  status = 200
+
+[[redirects]]
+  from = "/rules"
+  to = "/rules.html"
+  status = 200
+
+# Fallback for 404
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404
