@@ -142,6 +142,7 @@ class GameEngine {
         // Update game state
         this.lastPlay = {
             playerId,
+            playerName: player.name,
             cards,
             type: validation.type,
             isSafe,
