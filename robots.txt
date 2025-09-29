@@ -1,0 +1,6 @@
+# Robots.txt for False Show Game
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://falseshow.netlify.app/sitemap.xml

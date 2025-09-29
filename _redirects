@@ -1,0 +1,12 @@
+# Netlify redirects file
+# This ensures proper routing for the game
+
+# API/WebRTC fallbacks (if needed)
+/api/*  https://falseshow.netlify.app/:splat  200
+
+# Handle direct room joins
+/play?room=*  /play.html?room=:splat  200
+
+# Ensure PWA works properly
+/play  /play.html  200
+/rules  /rules.html  200
