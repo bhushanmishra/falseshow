@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>False Show - Game Room</title>
+    <meta name="theme-color" content="#ff3e3e">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎴</text></svg>">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/game.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Game Header -->
+        <header class="game-header">
+            <div class="header-left">
+                <button id="leaveBtn" class="icon-btn" title="Leave game">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                </button>
+                <div class="room-info">
+                    <span class="room-label">Room:</span>
+                    <span class="room-code" id="roomCode">------</span>
+                    <button id="copyCode" class="copy-btn" title="Copy code">📋</button>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="game-status" id="gameStatus">Waiting for players...</div>
+            </div>
+            <div class="header-right">
+                <button id="soundBtn" class="icon-btn" title="Toggle sound">🔊</button>
+                <button id="chatBtn" class="icon-btn" title="Toggle chat">💬</button>
+                <button id="menuBtn" class="icon-btn" title="Game menu">☰</button>
+            </div>
+        </header>
+
+        <!-- Game Board -->
+        <main class="game-board">
+            <!-- Other Players Area -->
+            <section class="opponents-area">
+                <div class="opponent-slots" id="opponentSlots">
+                    <!-- Dynamically generated opponent slots -->
+                </div>
+            </section>
+
+            <!-- Center Play Area -->
+            <section class="play-area">
+                <div class="deck-pile" id="deckPile">
+                    <div class="card-back"></div>
+                    <span class="deck-count">0</span>
+                </div>
+
+                <div class="played-cards" id="playedCards">
+                    <div class="play-zone">
+                        <p class="zone-hint">Cards played here</p>
+                    </div>
+                </div>
+
+                <div class="turn-indicator" id="turnIndicator">
+                    <span class="turn-text">Waiting...</span>
+                </div>
+            </section>
+
+            <!-- Player Hand Area -->
+            <section class="player-area">
+                <div class="player-info">
+                    <div class="player-avatar">👤</div>
+                    <div class="player-details">
+                        <span class="player-name" id="playerName">You</span>
+                        <span class="player-score">Score: <span id="playerScore">0</span></span>
+                    </div>
+                    <div class="player-timer" id="turnTimer">
+                        <svg class="timer-circle">
+                            <circle cx="20" cy="20" r="18"></circle>
+                        </svg>
+                        <span class="timer-text">30</span>
+                    </div>
+                </div>
+
+                <div class="player-hand" id="playerHand">
+                    <!-- Player's cards will be added here -->
+                </div>
+
+                <div class="action-buttons">
+                    <button id="playBtn" class="btn btn-primary" disabled>Play Cards</button>
+                    <button id="drawBtn" class="btn btn-secondary" disabled>Draw Card</button>
+                    <button id="showBtn" class="btn btn-danger">Call Show!</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Chat Panel (Hidden by default) -->
+        <aside class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <h3>Game Chat</h3>
+                <button class="close-chat" id="closeChat">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+            </div>
+            <div class="chat-input-area">
+                <div class="emoji-buttons">
+                    <button class="emoji-btn">😄</button>
+                    <button class="emoji-btn">😎</button>
+                    <button class="emoji-btn">😮</button>
+                    <button class="emoji-btn">😢</button>
+                    <button class="emoji-btn">🎉</button>
+                    <button class="emoji-btn">👏</button>
+                </div>
+                <input type="text" id="chatInput" placeholder="Type a message..." maxlength="100">
+                <button id="sendChat" class="btn btn-small">Send</button>
+            </div>
+        </aside>
+
+        <!-- Lobby Overlay (Shows when waiting for players) -->
+        <div class="lobby-overlay" id="lobbyOverlay">
+            <div class="lobby-content">
+                <h2>Game Lobby</h2>
+                <div class="lobby-code">
+                    <p>Share this code with friends:</p>
+                    <div class="code-display" id="lobbyCode">------</div>
+                    <button class="btn btn-secondary" id="copyLobbyCode">Copy Code</button>
+                </div>
+
+                <div class="players-list">
+                    <h3>Players (<span id="playerCount">1</span>/<span id="maxPlayers">6</span>)</h3>
+                    <ul id="playersList">
+                        <!-- Player list items -->
+                    </ul>
+                </div>
+
+                <div class="lobby-actions">
+                    <button id="startGameBtn" class="btn btn-primary" disabled>Start Game (Need 4+ players)</button>
+                    <button id="leaveLobbyBtn" class="btn btn-secondary">Leave Lobby</button>
+                </div>
+
+                <div class="game-settings" id="hostSettings">
+                    <h4>Game Settings</h4>
+                    <div class="setting-item">
+                        <label>Score Limit: <span id="scoreLimitDisplay">100</span></label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Room Type: <span id="roomTypeDisplay">Private</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Show Declaration Modal -->
+        <div class="modal" id="showModal">
+            <div class="modal-content modal-small">
+                <h2>Call Show!</h2>
+                <p>Are you sure you want to call Show?</p>
+                <p class="warning">If you're wrong, you'll get a 50 point penalty!</p>
+                <div class="modal-actions">
+                    <button class="btn btn-danger" id="confirmShow">Yes, Call Show!</button>
+                    <button class="btn btn-secondary" id="cancelShow">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div class="modal" id="gameOverModal">
+            <div class="modal-content">
+                <h2>Game Over!</h2>
+                <div class="winner-display">
+                    <div class="winner-icon">🏆</div>
+                    <h3 id="winnerName">Winner</h3>
+                </div>
+                <div class="final-scores" id="finalScores">
+                    <!-- Final scores list -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+                    <button class="btn btn-secondary" id="returnHomeBtn">Return Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="connection-status" id="connectionStatus">
+            <span class="status-icon">🔌</span>
+            <span class="status-text">Connecting...</span>
+        </div>
+    </div>
+
+    <!-- Load Trystero from CDN -->
+    <script type="module">
+        import {joinRoom} from 'https://esm.run/trystero/nostr';
+        window.trystero = {joinRoom};
+    </script>
+
+    <script src="/js/cards.js"></script>
+    <script src="/js/game-engine.js"></script>
+    <script src="/js/multiplayer.js"></script>
+    <script src="/js/ui.js"></script>
+    <script>
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.gameController = new GameController();
+        });
+    </script>
+</body>
+</html>

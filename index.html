@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>False Show - Multiplayer Card Game</title>
+    <meta name="description" content="Play False Show online with friends! A strategic bluff-and-show card game for 4-6 players. No downloads required.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff3e3e">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎴</text></svg>">
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="landing-container">
+        <header class="hero-section">
+            <div class="logo-container">
+                <span class="logo-icon">🎴</span>
+                <h1 class="game-title">FALSE SHOW</h1>
+                <p class="tagline">The Ultimate Bluffing Card Game</p>
+            </div>
+
+            <div class="hero-cards">
+                <div class="floating-card" style="--delay: 0s">♠</div>
+                <div class="floating-card" style="--delay: 1s">♥</div>
+                <div class="floating-card" style="--delay: 2s">♣</div>
+                <div class="floating-card" style="--delay: 3s">♦</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="play-options">
+                <h2>Start Playing</h2>
+
+                <div class="option-cards">
+                    <div class="option-card" id="createRoom">
+                        <div class="option-icon">🎮</div>
+                        <h3>Create Room</h3>
+                        <p>Start a new game and invite friends</p>
+                        <button class="btn btn-primary">Create Game</button>
+                    </div>
+
+                    <div class="option-card" id="joinRoom">
+                        <div class="option-icon">🔗</div>
+                        <h3>Join Room</h3>
+                        <p>Enter a room code to join</p>
+                        <div class="join-input-group">
+                            <input type="text" id="roomCodeInput" placeholder="Enter code" maxlength="6" autocomplete="off">
+                            <button class="btn btn-secondary" id="joinBtn">Join</button>
+                        </div>
+                    </div>
+
+                    <div class="option-card" id="quickPlay">
+                        <div class="option-icon">⚡</div>
+                        <h3>Quick Play</h3>
+                        <p>Join a random public game</p>
+                        <button class="btn btn-accent">Find Game</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="game-info">
+                <h2>How to Play</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <div>
+                            <h4>4-6 Players</h4>
+                            <p>Perfect for game night</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">⏱️</span>
+                        <div>
+                            <h4>20-45 min</h4>
+                            <p>Quick rounds</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🎯</span>
+                        <div>
+                            <h4>Last Standing</h4>
+                            <p>Survive to win</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📱</span>
+                        <div>
+                            <h4>Mobile Ready</h4>
+                            <p>Play anywhere</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="quick-rules">
+                <h2>Quick Rules</h2>
+                <ol class="rules-list">
+                    <li>Play cards from your hand - singles, pairs, or sequences</li>
+                    <li>Match the previous play's rank to avoid penalty</li>
+                    <li>Call "Show!" if you think you have the lowest hand</li>
+                    <li>First to reach the score limit is eliminated</li>
+                    <li>Last player standing wins!</li>
+                </ol>
+                <a href="/rules.html" class="btn btn-outline">Full Rules</a>
+            </section>
+        </main>
+
+        <footer>
+            <p>False Show © 2025 | <a href="/privacy">Privacy</a> | <a href="/terms">Terms</a></p>
+        </footer>
+    </div>
+
+    <!-- Create Room Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create New Game</h2>
+            <form id="createForm">
+                <div class="form-group">
+                    <label for="playerName">Your Name</label>
+                    <input type="text" id="playerName" required maxlength="20" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="maxPlayers">Max Players</label>
+                    <select id="maxPlayers">
+                        <option value="4">4 Players</option>
+                        <option value="5">5 Players</option>
+                        <option value="6" selected>6 Players</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scoreLimit">Score Limit</label>
+                    <select id="scoreLimit">
+                        <option value="75">75 (Quick)</option>
+                        <option value="100" selected>100 (Standard)</option>
+                        <option value="150">150 (Long)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="isPublic">
+                        Make room public
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Create Room</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
