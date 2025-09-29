@@ -1,15 +1,12 @@
 /* Mobile-specific styles for False Show */
 
 @media (max-width: 768px) {
-    /* Center all text on mobile */
-    body {
-        text-align: center;
-    }
-
     /* Landing page mobile adjustments */
     .landing-container {
         text-align: center;
     }
+
+    /* Only center specific elements that need it */
 
     .hero-section {
         padding: 2rem 1rem;
@@ -100,12 +97,20 @@
         text-align: center;
     }
 
-    /* Center rules list */
+    /* Rules list - keep left aligned but center container */
+    .quick-rules {
+        text-align: center;
+    }
+
     .rules-list {
-        text-align: left;
+        text-align: left !important;
         display: inline-block;
         max-width: 90%;
         margin: 0 auto 2rem auto;
+    }
+
+    .rules-list li {
+        text-align: left !important;
     }
 
     /* Center buttons */
@@ -127,6 +132,9 @@
     .modal-content {
         width: 95%;
         margin: 10% auto;
+    }
+
+    .modal-content h2 {
         text-align: center;
     }
 
@@ -138,6 +146,11 @@
         display: block;
         text-align: left;
         margin-bottom: 0.5rem;
+    }
+
+    .form-group input[type="checkbox"] + label {
+        display: inline;
+        margin-left: 0.5rem;
     }
 
     /* Game page mobile */
@@ -189,9 +202,15 @@
     }
 
     #playersList {
-        text-align: left;
         max-width: 300px;
         margin: 0 auto;
+    }
+
+    #playersList li {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .lobby-actions {
