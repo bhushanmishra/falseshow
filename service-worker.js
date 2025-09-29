@@ -51,8 +51,9 @@ self.addEventListener('fetch', event => {
         event.request.url.includes('unpkg.com') ||
         event.request.url.includes('cdn.') ||
         event.request.url.includes('wss://') ||
-        event.request.url.includes('ws://')) {
-        return fetch(event.request);
+        event.request.url.includes('ws://') ||
+        event.request.url.includes('chrome-extension://')) {
+        return;
     }
 
     event.respondWith(
@@ -69,6 +70,11 @@ self.addEventListener('fetch', event => {
                 return fetch(fetchRequest).then(response => {
                     // Check if valid response
                     if (!response || response.status !== 200 || response.type !== 'basic') {
+                        return response;
+                    }
+
+                    // Don't cache chrome-extension URLs
+                    if (event.request.url.startsWith('chrome-extension://')) {
                         return response;
                     }
 

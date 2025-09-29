@@ -60,7 +60,7 @@ class MultiplayerManager {
             }
 
             if (window.trystero && window.trystero.joinRoom) {
-                this.room = window.trystero.joinRoom(config);
+                this.room = window.trystero.joinRoom(config, this.roomCode);
                 this.setupRoomListeners();
                 this.setupChannels();
 
@@ -111,7 +111,7 @@ class MultiplayerManager {
             }
 
             if (window.trystero && window.trystero.joinRoom) {
-                this.room = window.trystero.joinRoom(config);
+                this.room = window.trystero.joinRoom(config, this.roomCode);
                 this.setupRoomListeners();
                 this.setupChannels();
 
