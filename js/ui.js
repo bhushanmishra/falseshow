@@ -226,6 +226,9 @@ class GameController {
             gameStatus.textContent = `Round 1 Started - ${this.gameEngine.jokerCard ? 'Joker Selected' : 'Setting up...'}`;
         }
 
+        // Save game state to localStorage
+        this.saveGameState();
+
         // If we're host, sync the initial state
         if (this.multiplayer.isHost) {
             this.multiplayer.sendGameState(this.gameEngine.serialize());
@@ -236,9 +239,39 @@ class GameController {
         setTimeout(() => this.updateGameUI(), 100);
     }
 
+    saveGameState() {
+        if (this.gameEngine && this.multiplayer.roomCode) {
+            const gameData = {
+                roomCode: this.multiplayer.roomCode,
+                playerId: this.myPlayerId,
+                gameState: this.gameEngine.serialize(),
+                timestamp: Date.now()
+            };
+            localStorage.setItem('falseshow_game', JSON.stringify(gameData));
+        }
+    }
+
+    loadGameState() {
+        const savedData = localStorage.getItem('falseshow_game');
+        if (savedData) {
+            try {
+                const gameData = JSON.parse(savedData);
+                // Check if saved game is less than 1 hour old
+                if (Date.now() - gameData.timestamp < 3600000) {
+                    return gameData;
+                }
+            } catch (e) {
+                // Invalid data
+            }
+        }
+        return null;
+    }
+
     syncGameState(state) {
         this.gameEngine.deserialize(state);
         this.updateGameUI();
+        // Save synced state
+        this.saveGameState();
     }
 
     handleGameAction(action, peerId) {

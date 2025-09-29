@@ -357,6 +357,10 @@ class GameEngine {
                 suit: this.jokerCard.suit,
                 rank: this.jokerCard.rank
             } : null,
+            initialCard: this.initialCard ? {
+                suit: this.initialCard.suit,
+                rank: this.initialCard.rank
+            } : null,
             scoreLimit: this.scoreLimit,
             gameState: this.gameState,
             roundNumber: this.roundNumber
@@ -382,6 +386,7 @@ class GameEngine {
         this.currentPlayerIndex = data.currentPlayerIndex;
         this.lastPlay = data.lastPlay;
         this.jokerCard = data.jokerCard ? new Card(data.jokerCard.suit, data.jokerCard.rank) : null;
+        this.initialCard = data.initialCard ? new Card(data.initialCard.suit, data.initialCard.rank) : null;
         this.scoreLimit = data.scoreLimit;
         this.gameState = data.gameState;
         this.roundNumber = data.roundNumber;
