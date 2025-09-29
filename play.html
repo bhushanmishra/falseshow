@@ -149,6 +149,24 @@
             </div>
         </div>
 
+        <!-- Penalty Choice Modal -->
+        <div class="modal" id="penaltyModal">
+            <div class="modal-content modal-small">
+                <h2>Unsafe Play - Choose Penalty</h2>
+                <p>Your play didn't match. Choose your penalty:</p>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="drawFromDeck">
+                        🎴 Draw from Deck
+                        <small style="display: block; font-size: 0.8em;">(1 unknown card)</small>
+                    </button>
+                    <button class="btn btn-secondary" id="pickupLastPlay">
+                        🔄 Pick Up Last Play
+                        <small style="display: block; font-size: 0.8em;">(<span id="lastPlayCount">0</span> cards)</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Show Declaration Modal -->
         <div class="modal" id="showModal">
             <div class="modal-content modal-small">

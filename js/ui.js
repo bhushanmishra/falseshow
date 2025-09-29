@@ -498,17 +498,22 @@ class GameController {
         const result = this.gameEngine.playCards(this.myPlayerId, selectedCards);
 
         if (result.success) {
-            // Send action to other players
-            this.multiplayer.sendGameAction({
-                type: 'playCards',
-                data: {
-                    cards: selectedCards.map(c => ({ suit: c.suit, rank: c.rank })),
-                    result
-                }
-            });
-
-            // Clear selection
+            // Clear selection first
             myPlayer.hand.clearSelection();
+
+            // Check if penalty choice is needed
+            if (result.needsPenalty) {
+                this.showPenaltyChoice(result.previousCards);
+            } else {
+                // Send action to other players
+                this.multiplayer.sendGameAction({
+                    type: 'playCards',
+                    data: {
+                        cards: selectedCards.map(c => ({ suit: c.suit, rank: c.rank })),
+                        result
+                    }
+                });
+            }
 
             // Update UI
             this.updateGameUI();
@@ -522,9 +527,51 @@ class GameController {
         }
     }
 
+    showPenaltyChoice(previousCardCount) {
+        const modal = document.getElementById('penaltyModal');
+        const lastPlayCount = document.getElementById('lastPlayCount');
+
+        if (modal && lastPlayCount) {
+            // Update card count for pickup option
+            const count = this.gameEngine.previousPlay ? this.gameEngine.previousPlay.cards.length : 0;
+            lastPlayCount.textContent = count;
+
+            modal.style.display = 'block';
+
+            // Setup event handlers
+            document.getElementById('drawFromDeck').onclick = () => {
+                this.handlePenaltyChoice('deck');
+                modal.style.display = 'none';
+            };
+
+            document.getElementById('pickupLastPlay').onclick = () => {
+                this.handlePenaltyChoice('pickup');
+                modal.style.display = 'none';
+            };
+        }
+    }
+
+    handlePenaltyChoice(choice) {
+        // Apply the penalty choice
+        const result = this.gameEngine.handlePenaltyChoice(this.myPlayerId, choice);
+
+        // Send to other players
+        this.multiplayer.sendGameAction({
+            type: 'penaltyChoice',
+            data: { choice }
+        });
+
+        // Update UI
+        this.updateGameUI();
+
+        // Sync if host
+        if (this.multiplayer.isHost) {
+            this.multiplayer.sendGameState(this.gameEngine.serialize());
+        }
+    }
+
     drawCard() {
-        // Drawing is handled automatically after unsafe plays
-        // This button could be for special cases
+        // Drawing is handled through penalty choice
     }
 
     showCallDialog() {

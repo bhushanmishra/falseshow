@@ -139,6 +139,9 @@ class GameEngine {
         // Remove cards from hand
         player.hand.removeCards(cards);
 
+        // Store previous play before updating
+        this.previousPlay = this.lastPlay;
+
         // Update game state
         this.lastPlay = {
             playerId,
@@ -151,15 +154,14 @@ class GameEngine {
 
         this.playedCards.push(...cards);
 
-        // Handle penalty if unsafe
+        // Check if penalty needed but don't apply yet
         if (!isSafe && this.lastPlay.cards.length > 0) {
-            player.hasDrawnPenalty = true;
-            if (!this.deck.isEmpty()) {
-                const penaltyCard = this.deck.draw(1)[0];
-                if (penaltyCard) {
-                    player.hand.addCard(penaltyCard);
-                }
-            }
+            // Don't move turn yet - wait for penalty choice
+            return {
+                success: true,
+                needsPenalty: true,
+                previousCards: this.previousPlay ? this.previousPlay.cards.length : 0
+            };
         }
 
         // Check if player has won the round
@@ -293,6 +295,31 @@ class GameEngine {
                 player.isEliminated = true;
             }
         });
+    }
+
+    handlePenaltyChoice(playerId, choice) {
+        const player = this.players.find(p => p.id === playerId);
+        if (!player) return { success: false, error: 'Invalid player' };
+
+        if (choice === 'deck') {
+            // Draw one card from deck
+            if (!this.deck.isEmpty()) {
+                const penaltyCard = this.deck.draw(1)[0];
+                if (penaltyCard) {
+                    player.hand.addCard(penaltyCard);
+                }
+            }
+        } else if (choice === 'pickup' && this.previousPlay) {
+            // Pick up all cards from previous play
+            this.previousPlay.cards.forEach(card => {
+                player.hand.addCard(card);
+            });
+        }
+
+        // Now move to next turn
+        this.nextTurn();
+
+        return { success: true, choice };
     }
 
     nextTurn() {
