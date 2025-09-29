@@ -220,12 +220,20 @@ class GameController {
         // Start first round
         const roundState = this.gameEngine.startNewRound();
 
+        // Show game started message
+        const gameStatus = document.getElementById('gameStatus');
+        if (gameStatus) {
+            gameStatus.textContent = `Round 1 Started - ${this.gameEngine.jokerCard ? 'Joker Selected' : 'Setting up...'}`;
+        }
+
         // If we're host, sync the initial state
         if (this.multiplayer.isHost) {
             this.multiplayer.sendGameState(this.gameEngine.serialize());
         }
 
+        // Force UI update with a small delay to ensure DOM is ready
         this.updateGameUI();
+        setTimeout(() => this.updateGameUI(), 100);
     }
 
     syncGameState(state) {
@@ -284,29 +292,42 @@ class GameController {
         const playedCards = document.getElementById('playedCards');
         const deckCount = document.querySelector('.deck-count');
 
-        if (this.gameEngine.lastPlay && this.gameEngine.lastPlay.cards.length > 0) {
-            const cardsHTML = this.gameEngine.lastPlay.cards.map(card => card.toHTML()).join('');
-            playedCards.innerHTML = `<div class="play-zone">${cardsHTML}</div>`;
+        if (!playedCards) return;
+
+        if (this.gameEngine && this.gameEngine.lastPlay && this.gameEngine.lastPlay.cards && this.gameEngine.lastPlay.cards.length > 0) {
+            try {
+                const cardsHTML = this.gameEngine.lastPlay.cards
+                    .filter(card => card && card.toHTML)
+                    .map(card => card.toHTML())
+                    .join('');
+                playedCards.innerHTML = `<div class="play-zone">${cardsHTML || '<p class="zone-hint">Setting up cards...</p>'}</div>`;
+            } catch (e) {
+                playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">Error displaying cards</p></div>`;
+            }
         } else {
-            playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">No cards played yet</p></div>`;
+            playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">Waiting for first play...</p></div>`;
         }
 
-        if (deckCount) {
+        if (deckCount && this.gameEngine && this.gameEngine.deck) {
             deckCount.textContent = this.gameEngine.deck.cardsRemaining();
         }
 
         // Show joker indicator
-        if (this.gameEngine.jokerCard) {
+        if (this.gameEngine && this.gameEngine.jokerCard && this.gameEngine.jokerCard.toHTML) {
             const jokerInfo = document.createElement('div');
             jokerInfo.className = 'joker-indicator';
-            jokerInfo.innerHTML = `Joker: ${this.gameEngine.jokerCard.toHTML()}`;
-            jokerInfo.style.cssText = 'position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);';
+            jokerInfo.innerHTML = `<strong>Joker:</strong> ${this.gameEngine.jokerCard.toHTML()}`;
+            jokerInfo.style.cssText = 'position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 100;';
 
             const existingJoker = document.querySelector('.joker-indicator');
             if (existingJoker) {
                 existingJoker.remove();
             }
-            document.querySelector('.play-area')?.appendChild(jokerInfo);
+            const playArea = document.querySelector('.play-area');
+            if (playArea) {
+                playArea.style.position = 'relative';
+                playArea.appendChild(jokerInfo);
+            }
         }
     }
 
@@ -369,9 +390,11 @@ class GameController {
 
         if (turnIndicator && currentPlayer) {
             const isMyTurn = currentPlayer.id === this.myPlayerId;
+            turnIndicator.className = `turn-indicator ${isMyTurn ? 'my-turn' : ''}`;
             turnIndicator.innerHTML = `
-                <span class="turn-text">${isMyTurn ? 'Your Turn' : `${currentPlayer.name}'s Turn`}</span>
+                <span class="turn-text">${isMyTurn ? '🎯 YOUR TURN!' : `⏳ ${currentPlayer.name}'s Turn`}</span>
             `;
+            turnIndicator.style.display = 'block';
         }
 
         if (gameStatus) {

@@ -29,6 +29,7 @@ class GameEngine {
     startNewRound() {
         this.roundNumber++;
         this.deck = new Deck();
+        this.deck.reset();  // Ensure deck is fully initialized
         this.deck.shuffle();
         this.playedCards = [];
         this.lastPlay = null;
