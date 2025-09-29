@@ -20,7 +20,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Opened cache');
+                //console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
     );
@@ -34,7 +34,7 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
+                        //console.log('Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -100,5 +100,5 @@ self.addEventListener('sync', event => {
 
 async function syncGameState() {
     // This would sync any pending game actions when connection is restored
-    console.log('Syncing game state...');
+    //console.log('Syncing game state...');
 }

@@ -20,7 +20,7 @@ class GameController {
 
         this.multiplayer.playerInfo.name = playerName;
 
-        console.log('Action from URL:', action);
+        //console.log('Action from URL:', action);
 
         // Process action immediately since DOM is ready
         if (action === 'create') {
@@ -28,16 +28,16 @@ class GameController {
             const scoreLimit = parseInt(params.get('scoreLimit')) || 100;
             const isPublic = params.get('public') === 'true';
 
-            console.log('Creating room with settings:', { maxPlayers, scoreLimit, isPublic });
+            //console.log('Creating room with settings:', { maxPlayers, scoreLimit, isPublic });
             this.createRoom({ maxPlayers, scoreLimit, isPublic });
         } else if (action === 'join') {
             const roomCode = params.get('room');
             if (roomCode) {
-                console.log('Joining room:', roomCode);
+                //console.log('Joining room:', roomCode);
                 this.joinRoom(roomCode);
             }
         } else if (action === 'quick') {
-            console.log('Quick play');
+            //console.log('Quick play');
             this.quickPlay();
         }
     }
@@ -53,7 +53,7 @@ class GameController {
             // Try to set up P2P connection
             await this.multiplayer.createRoom(settings);
             this.updateConnectionStatus('connected');
-            console.log('P2P room created with code:', roomCode);
+            //console.log('P2P room created with code:', roomCode);
         } catch (error) {
             console.warn('P2P setup failed, but room code is:', roomCode);
             // P2P might fail but room code still works for display
@@ -138,7 +138,7 @@ class GameController {
         if (roomCodeEl) roomCodeEl.textContent = code || '------';
         if (lobbyCodeEl) lobbyCodeEl.textContent = code || '------';
 
-        console.log('Room code updated to:', code);
+        //console.log('Room code updated to:', code);
     }
 
     showLobby() {
@@ -536,7 +536,7 @@ class GameController {
 
     copyRoomCode() {
         const code = this.multiplayer.roomCode;
-        console.log('Copying room code:', code);
+        //console.log('Copying room code:', code);
         if (code && code !== '------') {
             navigator.clipboard.writeText(code);
             this.showSuccess(`Room code ${code} copied!`);

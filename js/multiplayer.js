@@ -72,7 +72,7 @@ class MultiplayerManager {
                     hostId: this.myId
                 };
 
-                console.log('Room created:', this.roomCode);
+                //console.log('Room created:', this.roomCode);
                 return this.roomCode;
             } else {
                 // Fallback - still return room code for display
@@ -115,7 +115,7 @@ class MultiplayerManager {
                 this.setupRoomListeners();
                 this.setupChannels();
 
-                console.log('Joining room:', this.roomCode);
+                //console.log('Joining room:', this.roomCode);
                 return this.roomCode;
             } else {
                 console.warn('Trystero not fully loaded, using fallback');
@@ -132,7 +132,7 @@ class MultiplayerManager {
 
         // When a peer joins
         this.room.onPeerJoin(peerId => {
-            console.log('Peer joined:', peerId);
+            //console.log('Peer joined:', peerId);
 
             // Add peer to our list
             this.peers.set(peerId, {
@@ -158,7 +158,7 @@ class MultiplayerManager {
 
         // When a peer leaves
         this.room.onPeerLeave(peerId => {
-            console.log('Peer left:', peerId);
+            //console.log('Peer left:', peerId);
 
             // Remove peer from our list
             this.peers.delete(peerId);
@@ -180,7 +180,7 @@ class MultiplayerManager {
         const [sendInfo, receiveInfo] = this.room.makeAction('playerInfo');
         this.channels.sendPlayerInfo = sendInfo;
         receiveInfo((data, peerId) => {
-            console.log('Received player info:', data, 'from', peerId);
+            //console.log('Received player info:', data, 'from', peerId);
             const peer = this.peers.get(peerId);
             if (peer) {
                 Object.assign(peer, data);
@@ -192,7 +192,7 @@ class MultiplayerManager {
         const [sendSettings, receiveSettings] = this.room.makeAction('roomSettings');
         this.channels.sendRoomSettings = sendSettings;
         receiveSettings((data) => {
-            console.log('Received room settings:', data);
+            //console.log('Received room settings:', data);
             this.roomSettings = data;
             this.onSettingsUpdate();
         });
@@ -201,7 +201,7 @@ class MultiplayerManager {
         const [sendGameState, receiveGameState] = this.room.makeAction('gameState');
         this.channels.sendGameState = sendGameState;
         receiveGameState((data) => {
-            console.log('Received game state:', data);
+            //console.log('Received game state:', data);
             this.onGameStateReceived(data);
         });
 
@@ -209,7 +209,7 @@ class MultiplayerManager {
         const [sendAction, receiveAction] = this.room.makeAction('gameAction');
         this.channels.sendGameAction = sendAction;
         receiveAction((data, peerId) => {
-            console.log('Received game action:', data, 'from', peerId);
+            //console.log('Received game action:', data, 'from', peerId);
             this.onGameActionReceived(data, peerId);
         });
 
@@ -242,7 +242,7 @@ class MultiplayerManager {
         const [sendStart, receiveStart] = this.room.makeAction('startGame');
         this.channels.sendStartGame = sendStart;
         receiveStart((data) => {
-            console.log('Game starting!', data);
+            //console.log('Game starting!', data);
             this.onGameStart(data);
         });
     }
@@ -338,7 +338,7 @@ class MultiplayerManager {
         // Check if we have enough players (now 2+ players)
         const playerCount = this.peers.size + 1; // +1 for ourselves
         if (playerCount < 2) {
-            console.log('Not enough players (need at least 2)');
+            //console.log('Not enough players (need at least 2)');
             return false;
         }
 
@@ -376,7 +376,7 @@ class MultiplayerManager {
             this.isHost = true;
             this.roomSettings.hostId = this.myId;
             this.sendRoomSettings();
-            console.log('I am the new host');
+            //console.log('I am the new host');
         }
     }
 

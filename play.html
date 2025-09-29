@@ -199,12 +199,12 @@
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 window.gameController = new GameController();
-                console.log('GameController initialized after DOMContentLoaded');
+                //console.log('GameController initialized after DOMContentLoaded');
             });
         } else {
             // DOM already loaded
             window.gameController = new GameController();
-            console.log('GameController initialized immediately');
+            //console.log('GameController initialized immediately');
         }
     </script>
 
@@ -215,7 +215,7 @@
 
         // Make it available globally
         window.trystero = {joinRoom};
-        console.log('Trystero loaded:', !!window.trystero);
+        //console.log('Trystero loaded:', !!window.trystero);
     </script>
 </body>
 </html>

@@ -171,6 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Service Worker registration for PWA
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
-        .then(reg => console.log('Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed'));
+        .then(reg => //console.log('Service Worker registered'))
+        .catch(err => //console.log('Service Worker registration failed'));
 }
