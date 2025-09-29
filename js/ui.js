@@ -180,14 +180,14 @@ class GameController {
             playerCount.textContent = allPlayers.length;
         }
 
-        // Update start button
+        // Update start button - allow 2+ players
         const startBtn = document.getElementById('startGameBtn');
         if (startBtn && this.multiplayer.isHost) {
-            const canStart = allPlayers.length >= 4;
+            const canStart = allPlayers.length >= 2;  // Changed from 4 to 2
             startBtn.disabled = !canStart;
             startBtn.textContent = canStart ?
                 'Start Game' :
-                `Need ${4 - allPlayers.length} more player${4 - allPlayers.length > 1 ? 's' : ''}`;
+                'Need at least 2 players';
         }
     }
 

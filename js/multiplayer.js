@@ -335,10 +335,10 @@ class MultiplayerManager {
     startGame() {
         if (!this.isHost || !this.channels.sendStartGame) return;
 
-        // Check if we have enough players
+        // Check if we have enough players (now 2+ players)
         const playerCount = this.peers.size + 1; // +1 for ourselves
-        if (playerCount < 4) {
-            console.log('Not enough players');
+        if (playerCount < 2) {
+            console.log('Not enough players (need at least 2)');
             return false;
         }
 

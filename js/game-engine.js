@@ -60,9 +60,12 @@ class GameEngine {
         const playerCount = activePlayers.length;
         let cardsPerPlayer;
 
-        if (playerCount === 4) cardsPerPlayer = 8;
+        // Adjusted for 2+ players
+        if (playerCount === 2) cardsPerPlayer = 10;
+        else if (playerCount === 3) cardsPerPlayer = 9;
+        else if (playerCount === 4) cardsPerPlayer = 8;
         else if (playerCount === 5) cardsPerPlayer = 7;
-        else cardsPerPlayer = 6; // 6 players
+        else cardsPerPlayer = 6; // 6+ players
 
         // Deal cards to each player
         activePlayers.forEach(player => {
