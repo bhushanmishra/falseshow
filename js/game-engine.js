@@ -190,13 +190,13 @@ class GameEngine {
         // Calculate all hand values
         const handValues = this.getActivePlayers().map(p => ({
             playerId: p.id,
-            value: p.hand.calculateHandValue(),
+            value: p.hand.calculateHandValue(this.jokerCard),
             cards: p.hand.cards
         }));
 
         // Find lowest hand value
         const lowestValue = Math.min(...handValues.map(h => h.value));
-        const hasLowestHand = player.hand.calculateHandValue() === lowestValue;
+        const hasLowestHand = player.hand.calculateHandValue(this.jokerCard) === lowestValue;
 
         // Apply scores
         const scores = {};
@@ -206,7 +206,7 @@ class GameEngine {
                 if (p.id === playerId) {
                     scores[p.id] = 0; // Caller scores 0
                 } else {
-                    scores[p.id] = p.hand.calculateHandValue();
+                    scores[p.id] = p.hand.calculateHandValue(this.jokerCard);
                     p.score += scores[p.id];
                 }
             });
@@ -216,10 +216,10 @@ class GameEngine {
                 if (p.id === playerId) {
                     scores[p.id] = 50; // Penalty for wrong call
                     p.score += 50;
-                } else if (p.hand.calculateHandValue() === lowestValue) {
+                } else if (p.hand.calculateHandValue(this.jokerCard) === lowestValue) {
                     scores[p.id] = 0; // Actual lowest scores 0
                 } else {
-                    scores[p.id] = p.hand.calculateHandValue();
+                    scores[p.id] = p.hand.calculateHandValue(this.jokerCard);
                     p.score += scores[p.id];
                 }
             });
@@ -259,7 +259,7 @@ class GameEngine {
             if (p.id === winnerId) {
                 scores[p.id] = 0; // Winner scores 0
             } else {
-                scores[p.id] = p.hand.calculateHandValue();
+                scores[p.id] = p.hand.calculateHandValue(this.jokerCard);
                 p.score += scores[p.id];
             }
         });

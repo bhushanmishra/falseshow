@@ -165,8 +165,14 @@ class Hand {
         this.selectedCards.clear();
     }
 
-    calculateHandValue() {
-        return this.cards.reduce((sum, card) => sum + card.value, 0);
+    calculateHandValue(jokerCard = null) {
+        return this.cards.reduce((sum, card) => {
+            // If this card is the joker, it's worth 0 points
+            if (jokerCard && card.equals(jokerCard)) {
+                return sum;
+            }
+            return sum + card.value;
+        }, 0);
     }
 
     hasJoker(jokerCard) {

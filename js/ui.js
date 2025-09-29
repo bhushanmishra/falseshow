@@ -27,9 +27,10 @@ class GameController {
             const maxPlayers = parseInt(params.get('maxPlayers')) || 6;
             const scoreLimit = parseInt(params.get('scoreLimit')) || 100;
             const isPublic = params.get('public') === 'true';
+            const aiPlayers = params.get('aiPlayers') === 'true';
 
-            //console.log('Creating room with settings:', { maxPlayers, scoreLimit, isPublic });
-            this.createRoom({ maxPlayers, scoreLimit, isPublic });
+            //console.log('Creating room with settings:', { maxPlayers, scoreLimit, isPublic, aiPlayers });
+            this.createRoom({ maxPlayers, scoreLimit, isPublic, aiPlayers });
         } else if (action === 'join') {
             const roomCode = params.get('room');
             if (roomCode) {
@@ -214,8 +215,36 @@ class GameController {
     handleGameStart(state) {
         this.hideLobby();
 
-        // Initialize game engine with players
-        this.gameEngine.initialize(state.players, state.settings);
+        // Add AI players if enabled and needed
+        let players = [...state.players];
+        if (state.settings && state.settings.aiPlayers && this.multiplayer.isHost) {
+            const maxPlayers = state.settings.maxPlayers || 4;
+            const currentPlayers = players.length;
+            const aiCount = Math.min(maxPlayers - currentPlayers, maxPlayers - 1); // At least 1 human
+
+            for (let i = 0; i < aiCount; i++) {
+                const aiPlayer = {
+                    id: `ai-player-${i + 1}`,
+                    name: `Robot ${i + 1}`,
+                    avatar: '🤖',
+                    score: 0,
+                    isAI: true
+                };
+                players.push(aiPlayer);
+            }
+
+            // Initialize AI players
+            this.aiPlayers = [];
+            for (let i = 0; i < aiCount; i++) {
+                this.aiPlayers.push({
+                    id: `ai-player-${i + 1}`,
+                    controller: new AIPlayer('medium')
+                });
+            }
+        }
+
+        // Initialize game engine with all players (human + AI)
+        this.gameEngine.initialize(players, state.settings);
 
         // Start first round
         const roundState = this.gameEngine.startNewRound();
@@ -294,6 +323,89 @@ class GameController {
         this.updatePlayerHand();
         this.updateActionButtons();
         this.updateTurnIndicator();
+
+        // Check if it's an AI player's turn
+        this.checkAITurn();
+    }
+
+    async checkAITurn() {
+        if (!this.multiplayer.isHost || !this.aiPlayers || this.gameEngine.gameState !== 'playing') {
+            return;
+        }
+
+        const currentPlayer = this.gameEngine.getCurrentPlayer();
+        if (!currentPlayer) return;
+
+        // Check if current player is AI
+        const aiPlayer = this.aiPlayers?.find(ai => ai.id === currentPlayer.id);
+        if (!aiPlayer) return;
+
+        // Prevent multiple AI actions
+        if (this.aiProcessing) return;
+        this.aiProcessing = true;
+
+        try {
+            // Get AI player's hand
+            const aiHand = currentPlayer.hand;
+
+            // Let AI make decision
+            const decision = await aiPlayer.controller.makePlay(
+                this.gameEngine.getGameState(),
+                aiHand,
+                this.gameEngine.jokerCard
+            );
+
+            if (decision.action === 'show') {
+                // AI calls Show
+                const result = this.gameEngine.callShow(currentPlayer.id);
+
+                // Broadcast the action
+                this.multiplayer.sendGameAction({
+                    type: 'callShow',
+                    data: { result }
+                });
+
+                if (result.success) {
+                    this.showRoundResults(result);
+                }
+            } else if (decision.action === 'play' && decision.cards) {
+                // AI plays cards
+                const result = this.gameEngine.playCards(currentPlayer.id, decision.cards);
+
+                if (result.success) {
+                    // Check if penalty needed
+                    if (result.needsPenalty) {
+                        // AI chooses penalty
+                        const penaltyChoice = aiPlayer.controller.choosePenalty(
+                            this.gameEngine.getGameState(),
+                            aiHand
+                        );
+                        this.gameEngine.handlePenaltyChoice(currentPlayer.id, penaltyChoice);
+                    }
+
+                    // Broadcast the action
+                    this.multiplayer.sendGameAction({
+                        type: 'playCards',
+                        data: {
+                            cards: decision.cards.map(c => ({ suit: c.suit, rank: c.rank })),
+                            result
+                        }
+                    });
+                }
+            }
+
+            // Sync game state
+            if (this.multiplayer.isHost) {
+                this.multiplayer.sendGameState(this.gameEngine.serialize());
+            }
+
+            // Update UI
+            this.updateGameUI();
+        } catch (error) {
+            console.error('AI error:', error);
+        } finally {
+            this.aiProcessing = false;
+        }
     }
 
     updateOpponentsDisplay() {
@@ -449,16 +561,47 @@ class GameController {
         const myPlayer = this.gameEngine.players.find(p => p.id === this.myPlayerId);
         const isMyTurn = this.gameEngine.getCurrentPlayer()?.id === this.myPlayerId;
 
-        if (playBtn) {
-            playBtn.disabled = !isMyTurn || myPlayer.hand.getSelectedCards().length === 0;
-        }
+        // Check if player has only joker left
+        const hasOnlyJoker = myPlayer &&
+            myPlayer.hand.size() === 1 &&
+            myPlayer.hand.hasJoker(this.gameEngine.jokerCard);
 
-        if (drawBtn) {
-            drawBtn.disabled = !isMyTurn || this.gameEngine.deck.isEmpty();
-        }
+        if (hasOnlyJoker && isMyTurn) {
+            // Force player to either call Show or play the joker (discard and draw)
+            if (playBtn) {
+                // Can play only if joker is selected
+                const selectedCards = myPlayer.hand.getSelectedCards();
+                playBtn.disabled = selectedCards.length === 0 ||
+                    !selectedCards[0].equals(this.gameEngine.jokerCard);
+            }
 
-        if (showBtn) {
-            showBtn.disabled = myPlayer.isEliminated;
+            if (drawBtn) {
+                drawBtn.disabled = true; // Cannot just draw without discarding joker
+            }
+
+            if (showBtn) {
+                showBtn.disabled = false; // Can always call Show with joker
+            }
+
+            // Show warning message
+            const gameStatus = document.getElementById('gameStatus');
+            if (gameStatus) {
+                gameStatus.textContent = 'You have only the Joker! You must call "Show!" or discard it and draw.';
+                gameStatus.style.color = '#ff3e3e';
+            }
+        } else {
+            // Normal rules
+            if (playBtn) {
+                playBtn.disabled = !isMyTurn || myPlayer.hand.getSelectedCards().length === 0;
+            }
+
+            if (drawBtn) {
+                drawBtn.disabled = !isMyTurn || this.gameEngine.deck.isEmpty();
+            }
+
+            if (showBtn) {
+                showBtn.disabled = myPlayer.isEliminated;
+            }
         }
     }
 
@@ -495,11 +638,24 @@ class GameController {
         const selectedCards = myPlayer.hand.getSelectedCards();
         if (selectedCards.length === 0) return;
 
+        // Check if playing the last joker card
+        const wasOnlyJoker = myPlayer.hand.size() === 1 &&
+            selectedCards.length === 1 &&
+            selectedCards[0].equals(this.gameEngine.jokerCard);
+
         const result = this.gameEngine.playCards(this.myPlayerId, selectedCards);
 
         if (result.success) {
             // Clear selection first
             myPlayer.hand.clearSelection();
+
+            // If player discarded their last joker, they must draw
+            if (wasOnlyJoker && !this.gameEngine.deck.isEmpty()) {
+                const drawnCard = this.gameEngine.deck.draw(1)[0];
+                if (drawnCard) {
+                    myPlayer.hand.addCard(drawnCard);
+                }
+            }
 
             // Check if penalty choice is needed
             if (result.needsPenalty) {

@@ -69,6 +69,7 @@ class MultiplayerManager {
                     maxPlayers: settings.maxPlayers || 6,
                     scoreLimit: settings.scoreLimit || 100,
                     isPublic: settings.isPublic || false,
+                    aiPlayers: settings.aiPlayers || false,
                     hostId: this.myId
                 };
 
@@ -81,6 +82,7 @@ class MultiplayerManager {
                     maxPlayers: settings.maxPlayers || 6,
                     scoreLimit: settings.scoreLimit || 100,
                     isPublic: settings.isPublic || false,
+                    aiPlayers: settings.aiPlayers || false,
                     hostId: this.myId
                 };
                 return this.roomCode;

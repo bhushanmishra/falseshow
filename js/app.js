@@ -18,6 +18,7 @@ class App {
         this.maxPlayersSelect = document.getElementById('maxPlayers');
         this.scoreLimitSelect = document.getElementById('scoreLimit');
         this.isPublicCheck = document.getElementById('isPublic');
+        this.addAIPlayersCheck = document.getElementById('addAIPlayers');
 
         // Button elements
         this.createRoomBtn = document.getElementById('createRoom');
@@ -82,6 +83,7 @@ class App {
         const maxPlayers = parseInt(this.maxPlayersSelect.value);
         const scoreLimit = parseInt(this.scoreLimitSelect.value);
         const isPublic = this.isPublicCheck.checked;
+        const addAIPlayers = this.addAIPlayersCheck.checked;
 
         if (!playerName) {
             this.showError('Please enter your name');
@@ -100,7 +102,8 @@ class App {
             name: playerName,
             maxPlayers: maxPlayers,
             scoreLimit: scoreLimit,
-            public: isPublic
+            public: isPublic,
+            aiPlayers: addAIPlayers
         });
 
         window.location.href = `/play.html?${params}`;

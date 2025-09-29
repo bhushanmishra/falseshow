@@ -9,11 +9,11 @@
     /* Only center specific elements that need it */
 
     .hero-section {
-        padding: 2rem 1rem;
+        padding: 1rem 0.5rem;
     }
 
     .game-title {
-        font-size: 3rem;
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
         text-align: center;
     }
 
@@ -41,6 +41,7 @@
         width: 90%;
         max-width: 350px;
         text-align: center;
+        padding: 0.8rem;
     }
 
     .option-card h3 {
@@ -68,25 +69,22 @@
 
     /* Center info grid */
     .info-grid {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
     }
 
     .info-item {
-        width: 90%;
-        max-width: 350px;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 1.5rem;
+        padding: 0.5rem;
     }
 
     .info-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
     }
 
     .info-item h4 {
@@ -106,7 +104,9 @@
         text-align: left !important;
         display: inline-block;
         max-width: 90%;
-        margin: 0 auto 2rem auto;
+        margin: 0 auto 0.5rem auto;
+        font-size: 0.85rem;
+        line-height: 1.4;
     }
 
     .rules-list li {
@@ -155,10 +155,11 @@
 
     /* Game page mobile */
     .game-header {
-        flex-direction: column;
-        gap: 1rem;
+        flex-direction: row;
+        gap: 0.5rem;
         text-align: center;
-        padding: 1rem;
+        padding: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .header-left,
@@ -189,8 +190,8 @@
     }
 
     .code-display {
-        font-size: 2.5rem;
-        padding: 1.5rem;
+        font-size: 2rem;
+        padding: 1rem;
     }
 
     .players-list {
@@ -322,28 +323,107 @@
 
 /* Extra small devices */
 @media (max-width: 480px) {
-    .game-title {
-        font-size: 2.5rem;
+    .landing-container {
+        height: 100vh;
+        max-height: 100vh;
     }
 
-    .hero-subtitle {
-        font-size: 1.1rem;
+    .hero-section {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .game-title {
+        font-size: 1.8rem;
+    }
+
+    .tagline {
+        font-size: 0.9rem;
     }
 
     .option-card {
         width: 95%;
+        padding: 0.75rem;
+    }
+
+    .option-icon {
+        font-size: 1.8rem;
+    }
+
+    .option-card h3 {
+        font-size: 1rem;
+    }
+
+    .option-card p {
+        font-size: 0.8rem;
+    }
+
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
     }
 
     .info-item {
-        width: 95%;
+        padding: 0.4rem;
+    }
+
+    .info-icon {
+        font-size: 1.2rem;
+    }
+
+    .info-item h4 {
+        font-size: 0.8rem;
+    }
+
+    .info-item p {
+        font-size: 0.7rem;
     }
 
     .code-display {
-        font-size: 2rem;
+        font-size: 1.5rem;
+        padding: 0.75rem;
     }
 
     .btn {
-        font-size: 0.95rem;
-        padding: 0.75rem 1.5rem;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+
+    /* Game page optimizations */
+    .game-container {
+        height: 100vh;
+        max-height: 100vh;
+    }
+
+    .game-header {
+        padding: 0.3rem;
+    }
+
+    .opponents-area {
+        max-height: 12vh;
+    }
+
+    .opponent-slot {
+        padding: 0.3rem;
+        min-width: 60px;
+        max-width: 90px;
+    }
+
+    .player-area {
+        max-height: 28vh;
+    }
+
+    .play-area {
+        max-height: 25vh;
+    }
+
+    .card {
+        width: 45px;
+        height: 63px;
+    }
+
+    .action-buttons .btn {
+        min-width: 70px;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.5rem;
     }
 }
