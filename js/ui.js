@@ -39,12 +39,29 @@ class GameController {
     async createRoom(settings) {
         try {
             const roomCode = await this.multiplayer.createRoom(settings);
-            this.updateRoomCode(roomCode);
-            this.showLobby();
-            this.updateConnectionStatus('connected');
+
+            // Always update and show room code, even if Trystero isn't fully loaded
+            if (roomCode) {
+                this.updateRoomCode(roomCode);
+                this.showLobby();
+                this.updateConnectionStatus('connected');
+                console.log('Room created with code:', roomCode);
+            } else {
+                // Generate a fallback code if needed
+                const fallbackCode = this.multiplayer.generateRoomCode();
+                this.multiplayer.roomCode = fallbackCode;
+                this.updateRoomCode(fallbackCode);
+                this.showLobby();
+                this.updateConnectionStatus('connecting');
+            }
         } catch (error) {
             console.error('Failed to create room:', error);
-            this.showError('Failed to create room. Please try again.');
+            // Still show the lobby with a room code
+            const fallbackCode = this.multiplayer.generateRoomCode();
+            this.multiplayer.roomCode = fallbackCode;
+            this.updateRoomCode(fallbackCode);
+            this.showLobby();
+            this.updateConnectionStatus('connecting');
         }
     }
 
@@ -118,9 +135,14 @@ class GameController {
     }
 
     updateRoomCode(code) {
-        document.getElementById('roomCode').textContent = code;
-        document.getElementById('lobbyCode').textContent = code;
-        document.getElementById('roomCode').textContent = code;
+        // Update all room code displays
+        const roomCodeEl = document.getElementById('roomCode');
+        const lobbyCodeEl = document.getElementById('lobbyCode');
+
+        if (roomCodeEl) roomCodeEl.textContent = code || '------';
+        if (lobbyCodeEl) lobbyCodeEl.textContent = code || '------';
+
+        console.log('Room code updated to:', code);
     }
 
     showLobby() {

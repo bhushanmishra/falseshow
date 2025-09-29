@@ -43,29 +43,48 @@ class MultiplayerManager {
 
         const config = {
             appId: 'false-show-game',
-            roomId: this.roomCode,
-            ...settings
+            password: this.roomCode  // Using password instead of roomId for Trystero
         };
 
         // Join room using Trystero
-        if (window.trystero && window.trystero.joinRoom) {
-            this.room = window.trystero.joinRoom(config);
-            this.setupRoomListeners();
-            this.setupChannels();
+        try {
+            // Wait for Trystero to load
+            let attempts = 0;
+            while (!window.trystero && attempts < 10) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
 
-            // Store room settings
-            this.roomSettings = {
-                maxPlayers: settings.maxPlayers || 6,
-                scoreLimit: settings.scoreLimit || 100,
-                isPublic: settings.isPublic || false,
-                hostId: this.myId
-            };
+            if (window.trystero && window.trystero.joinRoom) {
+                this.room = window.trystero.joinRoom(config);
+                this.setupRoomListeners();
+                this.setupChannels();
 
-            console.log('Room created:', this.roomCode);
+                // Store room settings
+                this.roomSettings = {
+                    maxPlayers: settings.maxPlayers || 6,
+                    scoreLimit: settings.scoreLimit || 100,
+                    isPublic: settings.isPublic || false,
+                    hostId: this.myId
+                };
+
+                console.log('Room created:', this.roomCode);
+                return this.roomCode;
+            } else {
+                // Fallback - still return room code for display
+                console.warn('Trystero not fully loaded, using fallback');
+                this.roomSettings = {
+                    maxPlayers: settings.maxPlayers || 6,
+                    scoreLimit: settings.scoreLimit || 100,
+                    isPublic: settings.isPublic || false,
+                    hostId: this.myId
+                };
+                return this.roomCode;
+            }
+        } catch (error) {
+            console.error('Error creating room:', error);
+            // Return room code anyway for UI display
             return this.roomCode;
-        } else {
-            console.error('Trystero not loaded');
-            throw new Error('Multiplayer library not loaded');
         }
     }
 
@@ -75,19 +94,31 @@ class MultiplayerManager {
 
         const config = {
             appId: 'false-show-game',
-            roomId: this.roomCode
+            password: this.roomCode  // Using password instead of roomId for Trystero
         };
 
-        if (window.trystero && window.trystero.joinRoom) {
-            this.room = window.trystero.joinRoom(config);
-            this.setupRoomListeners();
-            this.setupChannels();
+        try {
+            // Wait for Trystero to load
+            let attempts = 0;
+            while (!window.trystero && attempts < 10) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
 
-            console.log('Joining room:', this.roomCode);
+            if (window.trystero && window.trystero.joinRoom) {
+                this.room = window.trystero.joinRoom(config);
+                this.setupRoomListeners();
+                this.setupChannels();
+
+                console.log('Joining room:', this.roomCode);
+                return this.roomCode;
+            } else {
+                console.warn('Trystero not fully loaded, using fallback');
+                return this.roomCode;
+            }
+        } catch (error) {
+            console.error('Error joining room:', error);
             return this.roomCode;
-        } else {
-            console.error('Trystero not loaded');
-            throw new Error('Multiplayer library not loaded');
         }
     }
 

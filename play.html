@@ -186,21 +186,24 @@
         </div>
     </div>
 
-    <!-- Load Trystero from CDN -->
-    <script type="module">
-        import {joinRoom} from 'https://esm.run/trystero/nostr';
-        window.trystero = {joinRoom};
-    </script>
-
+    <!-- Load all game scripts -->
     <script src="/js/cards.js"></script>
     <script src="/js/game-engine.js"></script>
     <script src="/js/multiplayer.js"></script>
     <script src="/js/ui.js"></script>
-    <script>
-        // Initialize game when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            window.gameController = new GameController();
-        });
+
+    <!-- Load Trystero and initialize game -->
+    <script type="module">
+        // Import Trystero
+        import {joinRoom} from 'https://esm.run/trystero/nostr';
+
+        // Make it available globally
+        window.trystero = {joinRoom};
+
+        // Initialize game controller after Trystero loads
+        window.gameController = new GameController();
+
+        console.log('Trystero loaded:', !!window.trystero);
     </script>
 </body>
 </html>
