@@ -20,23 +20,26 @@ class GameController {
 
         this.multiplayer.playerInfo.name = playerName;
 
-        // Use setTimeout to ensure DOM is ready
-        setTimeout(() => {
-            if (action === 'create') {
-                const maxPlayers = parseInt(params.get('maxPlayers')) || 6;
-                const scoreLimit = parseInt(params.get('scoreLimit')) || 100;
-                const isPublic = params.get('public') === 'true';
+        console.log('Action from URL:', action);
 
-                this.createRoom({ maxPlayers, scoreLimit, isPublic });
-            } else if (action === 'join') {
-                const roomCode = params.get('room');
-                if (roomCode) {
-                    this.joinRoom(roomCode);
-                }
-            } else if (action === 'quick') {
-                this.quickPlay();
+        // Process action immediately since DOM is ready
+        if (action === 'create') {
+            const maxPlayers = parseInt(params.get('maxPlayers')) || 6;
+            const scoreLimit = parseInt(params.get('scoreLimit')) || 100;
+            const isPublic = params.get('public') === 'true';
+
+            console.log('Creating room with settings:', { maxPlayers, scoreLimit, isPublic });
+            this.createRoom({ maxPlayers, scoreLimit, isPublic });
+        } else if (action === 'join') {
+            const roomCode = params.get('room');
+            if (roomCode) {
+                console.log('Joining room:', roomCode);
+                this.joinRoom(roomCode);
             }
-        }, 100);
+        } else if (action === 'quick') {
+            console.log('Quick play');
+            this.quickPlay();
+        }
     }
 
     async createRoom(settings) {

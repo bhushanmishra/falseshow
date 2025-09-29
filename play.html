@@ -192,17 +192,28 @@
     <script src="/js/multiplayer.js"></script>
     <script src="/js/ui.js"></script>
 
-    <!-- Load Trystero and initialize game -->
+    <!-- Initialize game when DOM is ready -->
+    <script>
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                window.gameController = new GameController();
+                console.log('GameController initialized after DOMContentLoaded');
+            });
+        } else {
+            // DOM already loaded
+            window.gameController = new GameController();
+            console.log('GameController initialized immediately');
+        }
+    </script>
+
+    <!-- Load Trystero separately (non-blocking) -->
     <script type="module">
         // Import Trystero
         import {joinRoom} from 'https://esm.run/trystero/nostr';
 
         // Make it available globally
         window.trystero = {joinRoom};
-
-        // Initialize game controller after Trystero loads
-        window.gameController = new GameController();
-
         console.log('Trystero loaded:', !!window.trystero);
     </script>
 </body>
