@@ -91,6 +91,9 @@ class App {
         // Save player name
         localStorage.setItem('playerName', playerName);
 
+        // Hide modal immediately
+        this.hideCreateModal();
+
         // Navigate to game page with create params
         const params = new URLSearchParams({
             action: 'create',
