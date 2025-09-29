@@ -46,6 +46,18 @@ class GameEngine {
         // Select joker
         this.selectJoker();
 
+        // Deal one card to start the play area
+        const startCard = this.deck.draw(1)[0];
+        if (startCard) {
+            this.lastPlay = {
+                playerId: 'dealer',
+                playerName: 'Dealer',
+                cards: [startCard],
+                type: 'single'
+            };
+            this.playedCards.push(startCard);
+        }
+
         this.gameState = 'playing';
 
         return {
@@ -78,8 +90,11 @@ class GameEngine {
         // Draw bottom 2 cards for joker selection
         const bottomCards = this.deck.drawBottom(2);
         if (bottomCards.length > 0) {
-            // Host/dealer picks one (for simplicity, pick randomly)
-            this.jokerCard = bottomCards[Math.floor(Math.random() * bottomCards.length)];
+            // Store both cards for display
+            this.jokerOptions = bottomCards;
+            // Host/dealer picks one (for simplicity, pick the first one)
+            // In a full implementation, the host would choose
+            this.jokerCard = bottomCards[0];
         }
     }
 

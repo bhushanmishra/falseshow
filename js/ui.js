@@ -287,6 +287,8 @@ class GameController {
         if (this.gameEngine.lastPlay && this.gameEngine.lastPlay.cards.length > 0) {
             const cardsHTML = this.gameEngine.lastPlay.cards.map(card => card.toHTML()).join('');
             playedCards.innerHTML = `<div class="play-zone">${cardsHTML}</div>`;
+        } else {
+            playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">No cards played yet</p></div>`;
         }
 
         if (deckCount) {
@@ -295,7 +297,16 @@ class GameController {
 
         // Show joker indicator
         if (this.gameEngine.jokerCard) {
-            // Could add a joker indicator to the UI
+            const jokerInfo = document.createElement('div');
+            jokerInfo.className = 'joker-indicator';
+            jokerInfo.innerHTML = `Joker: ${this.gameEngine.jokerCard.toHTML()}`;
+            jokerInfo.style.cssText = 'position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);';
+
+            const existingJoker = document.querySelector('.joker-indicator');
+            if (existingJoker) {
+                existingJoker.remove();
+            }
+            document.querySelector('.play-area')?.appendChild(jokerInfo);
         }
     }
 
