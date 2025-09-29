@@ -22,7 +22,7 @@
     box-sizing: border-box;
 }
 
-html, body {
+html {
     min-height: 100%;
     -webkit-tap-highlight-color: transparent;
 }
@@ -34,8 +34,7 @@ body {
     color: var(--text);
     line-height: 1.6;
     user-select: none;
-    overflow-x: hidden;
-    overflow-y: auto;
+    min-height: 100vh;
 }
 
 /* Landing Page Styles */
@@ -43,7 +42,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
 }
 
 .hero-section {

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test False Show Locally</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #222;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #444;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #ff3e3e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #cc2e2e;
+        }
+        #log {
+            background: #111;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: #4ade80;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .info {
+            color: #6b9fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎴 False Show Local Test</h1>
+
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="testRoomCreation()">Test Room Creation</button>
+        <button onclick="testTrystero()">Test Trystero Loading</button>
+        <button onclick="testMultiplayer()">Test Multiplayer Manager</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Test Links</h2>
+        <button onclick="window.open('/', '_blank')">Open Home Page</button>
+        <button onclick="window.open('/play.html?action=create&name=TestPlayer&maxPlayers=6&scoreLimit=100', '_blank')">Create Room (New Tab)</button>
+        <button onclick="window.open('/play.html', '_blank')">Play Page (Direct)</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Log</h2>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            log.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearLog() {
+            log.innerHTML = '';
+            addLog('Log cleared', 'info');
+        }
+
+        async function testRoomCreation() {
+            addLog('Testing room creation...', 'info');
+
+            try {
+                // Generate a test room code
+                const generateRoomCode = () => {
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    let code = '';
+                    for (let i = 0; i < 6; i++) {
+                        code += chars[Math.floor(Math.random() * chars.length)];
+                    }
+                    return code;
+                };
+
+                const code = generateRoomCode();
+                addLog(`✓ Room code generated: ${code}`, 'success');
+
+                // Test localStorage
+                localStorage.setItem('testRoomCode', code);
+                const retrieved = localStorage.getItem('testRoomCode');
+                if (retrieved === code) {
+                    addLog('✓ LocalStorage working', 'success');
+                } else {
+                    addLog('✗ LocalStorage failed', 'error');
+                }
+
+            } catch (error) {
+                addLog(`✗ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testTrystero() {
+            addLog('Testing Trystero loading...', 'info');
+
+            try {
+                // Import Trystero
+                const module = await import('https://esm.run/trystero/nostr');
+
+                if (module.joinRoom) {
+                    addLog('✓ Trystero module loaded successfully', 'success');
+                    addLog(`Available exports: ${Object.keys(module).join(', ')}`, 'info');
+
+                    // Test creating a room
+                    const testRoom = module.joinRoom({
+                        appId: 'test-app',
+                        password: 'TEST123'
+                    });
+
+                    if (testRoom) {
+                        addLog('✓ Test room created', 'success');
+
+                        // Check room methods
+                        const methods = Object.keys(testRoom);
+                        addLog(`Room methods: ${methods.join(', ')}`, 'info');
+
+                        // Clean up
+                        if (testRoom.leave) {
+                            testRoom.leave();
+                            addLog('✓ Test room cleaned up', 'success');
+                        }
+                    }
+                } else {
+                    addLog('✗ Trystero joinRoom not found', 'error');
+                }
+            } catch (error) {
+                addLog(`✗ Failed to load Trystero: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMultiplayer() {
+            addLog('Testing Multiplayer Manager...', 'info');
+
+            try {
+                // First load the required scripts
+                await loadScript('/js/cards.js');
+                await loadScript('/js/game-engine.js');
+                await loadScript('/js/multiplayer.js');
+
+                if (window.MultiplayerManager) {
+                    addLog('✓ MultiplayerManager loaded', 'success');
+
+                    const mp = new window.MultiplayerManager();
+                    addLog(`✓ Instance created with ID: ${mp.myId}`, 'success');
+
+                    // Test room code generation
+                    const code = mp.generateRoomCode();
+                    addLog(`✓ Generated room code: ${code}`, 'success');
+
+                    // Test Trystero availability
+                    if (window.trystero) {
+                        addLog('✓ Trystero is available', 'success');
+                    } else {
+                        addLog('⚠ Trystero not available yet', 'info');
+
+                        // Try loading it
+                        const module = await import('https://esm.run/trystero/nostr');
+                        window.trystero = module;
+                        addLog('✓ Trystero loaded manually', 'success');
+                    }
+
+                    // Try creating a room
+                    const roomCode = await mp.createRoom({
+                        maxPlayers: 6,
+                        scoreLimit: 100
+                    });
+
+                    if (roomCode) {
+                        addLog(`✓ Room created with code: ${roomCode}`, 'success');
+                    } else {
+                        addLog('✗ Room creation failed', 'error');
+                    }
+
+                } else {
+                    addLog('✗ MultiplayerManager not found', 'error');
+                }
+            } catch (error) {
+                addLog(`✗ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        // Initial log
+        addLog('Test environment ready', 'success');
+        addLog(`Server: http://localhost:8080`, 'info');
+    </script>
+</body>
+</html>

@@ -37,30 +37,20 @@ class GameController {
     }
 
     async createRoom(settings) {
-        try {
-            const roomCode = await this.multiplayer.createRoom(settings);
+        // Always generate and show room code immediately
+        const roomCode = this.multiplayer.generateRoomCode();
+        this.multiplayer.roomCode = roomCode;
+        this.updateRoomCode(roomCode);
+        this.showLobby();
 
-            // Always update and show room code, even if Trystero isn't fully loaded
-            if (roomCode) {
-                this.updateRoomCode(roomCode);
-                this.showLobby();
-                this.updateConnectionStatus('connected');
-                console.log('Room created with code:', roomCode);
-            } else {
-                // Generate a fallback code if needed
-                const fallbackCode = this.multiplayer.generateRoomCode();
-                this.multiplayer.roomCode = fallbackCode;
-                this.updateRoomCode(fallbackCode);
-                this.showLobby();
-                this.updateConnectionStatus('connecting');
-            }
+        try {
+            // Try to set up P2P connection
+            await this.multiplayer.createRoom(settings);
+            this.updateConnectionStatus('connected');
+            console.log('P2P room created with code:', roomCode);
         } catch (error) {
-            console.error('Failed to create room:', error);
-            // Still show the lobby with a room code
-            const fallbackCode = this.multiplayer.generateRoomCode();
-            this.multiplayer.roomCode = fallbackCode;
-            this.updateRoomCode(fallbackCode);
-            this.showLobby();
+            console.warn('P2P setup failed, but room code is:', roomCode);
+            // P2P might fail but room code still works for display
             this.updateConnectionStatus('connecting');
         }
     }
@@ -540,9 +530,12 @@ class GameController {
 
     copyRoomCode() {
         const code = this.multiplayer.roomCode;
-        if (code) {
+        console.log('Copying room code:', code);
+        if (code && code !== '------') {
             navigator.clipboard.writeText(code);
-            this.showSuccess('Room code copied!');
+            this.showSuccess(`Room code ${code} copied!`);
+        } else {
+            this.showError('No room code to copy');
         }
     }
 

@@ -38,12 +38,16 @@ class MultiplayerManager {
     }
 
     async createRoom(settings = {}) {
-        this.roomCode = this.generateRoomCode();
+        // Use existing room code if already set, otherwise generate new one
+        if (!this.roomCode) {
+            this.roomCode = this.generateRoomCode();
+        }
         this.isHost = true;
 
+        // Trystero config - appId is the namespace, password is the room separator
         const config = {
             appId: 'false-show-game',
-            password: this.roomCode  // Using password instead of roomId for Trystero
+            password: this.roomCode
         };
 
         // Join room using Trystero
@@ -92,9 +96,10 @@ class MultiplayerManager {
         this.roomCode = roomCode.toUpperCase();
         this.isHost = false;
 
+        // Trystero config - appId is the namespace, password is the room separator
         const config = {
             appId: 'false-show-game',
-            password: this.roomCode  // Using password instead of roomId for Trystero
+            password: this.roomCode
         };
 
         try {
