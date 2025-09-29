@@ -300,7 +300,20 @@ class GameController {
                     .filter(card => card && card.toHTML)
                     .map(card => card.toHTML())
                     .join('');
-                playedCards.innerHTML = `<div class="play-zone">${cardsHTML || '<p class="zone-hint">Setting up cards...</p>'}</div>`;
+
+                // Show who played these cards
+                const playerName = this.gameEngine.lastPlay.playerName || 'Unknown';
+                const playType = this.gameEngine.lastPlay.type || 'play';
+                const isSafe = this.gameEngine.lastPlay.isSafe;
+
+                playedCards.innerHTML = `
+                    <div class="play-zone">
+                        <div class="last-play-info" style="text-align: center; margin-bottom: 0.5rem; color: #888; font-size: 0.9rem;">
+                            <strong>${playerName}</strong> played ${playType}
+                            ${isSafe !== undefined ? (isSafe ? '<span style="color: #10b981;">✓ Safe</span>' : '<span style="color: #ef4444;">✗ Unsafe (drew penalty)</span>') : ''}
+                        </div>
+                        <div class="played-cards-display">${cardsHTML}</div>
+                    </div>`;
             } catch (e) {
                 playedCards.innerHTML = `<div class="play-zone"><p class="zone-hint">Error displaying cards</p></div>`;
             }
